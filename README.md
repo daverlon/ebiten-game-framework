@@ -5,8 +5,9 @@
 <br>
 <p>This framework uses a custom scene-stack system focused around isolating each scene's scope and logic. It also contains a custom camera system and sprite/entity management system. It contains a few demo scenes to test various functionality.</p>
 <br>
-<p>Preview screenshot:</p>
-<img src="github-resources/githubscreenshot.png" width=500 style="margin-top:-5px;">
+<p>Preview screenshots:</p>
+<img src="github-resources/githubscreenshot.png" width=300 style="margin-top:-5px;">
+<img src="github-resources/githubscreenshot2.png" width=300 style="margin-top:-5px;">
 <br>
 <p><b>To get started</b></p>
 <p>

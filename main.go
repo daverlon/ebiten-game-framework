@@ -10,8 +10,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
+
+var showdebuginfo = true
 
 var (
 	clrRed    = color.RGBA{255, 0, 0, 255}
@@ -56,12 +57,6 @@ func (g *Game) Update() error {
 
 	updateCursor(g)
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		if !GameInstance.scenes.IsEmpty() {
-			GameInstance.scenes.Pop()
-		}
-	}
-
 	// update current scene
 	if !GameInstance.scenes.IsEmpty() {
 		GameInstance.scenes.Active().Update()
@@ -96,59 +91,64 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		img := (spr.img).SubImage(image.Rect(spr.subx, spr.suby, spr.subw, spr.subh)).(*ebiten.Image)
 		screen.DrawImage(img, &op)
 
-		// debug lines
-		DrawOutlineRect(screen, tx, ty, spr.w*g.cam.zoom, spr.h*g.cam.zoom)
-		ebitenutil.DrawRect(screen, tx-3, ty-3, 6, 6, clrRed)
-		ebitenutil.DrawRect(screen, windowcenterx-3, windowcentery-3, 6, 6, clrYellow)
+		if showdebuginfo {
+			// debug lines
+			DrawOutlineRect(screen, tx, ty, spr.w*g.cam.zoom, spr.h*g.cam.zoom)
+			ebitenutil.DrawRect(screen, tx-3, ty-3, 6, 6, clrRed)
+			ebitenutil.DrawRect(screen, windowcenterx-3, windowcentery-3, 6, 6, clrYellow)
 
-		// debug position text
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("(%1.0f,%1.0f)", spr.x, spr.y), int(tx), int(ty))
+			// debug position text
+			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("(%1.0f,%1.0f)", spr.x, spr.y), int(tx), int(ty))
+		}
 	}
-
-	ebitenutil.DrawRect(screen, float64(g.cursor.screenx)-2, float64(g.cursor.screeny)-2, 4, 4, clrCyan)
-
-	ebitenutil.DebugPrintAt(
-		screen,
-		fmt.Sprintf("(%d, %d)", int(g.cursor.screenx), int(g.cursor.screeny)),
-		int(g.cursor.screenx), int(g.cursor.screeny))
 
 	// debug info
+	if showdebuginfo {
 
-	// scene info (to avoid crashing)
-	sceneName := "nil"
-	sceneIndex := len(g.scenes) - 1
-	sceneCount := len(g.scenes)
-	if !g.scenes.IsEmpty() {
-		sceneName = g.scenes[len(g.scenes)-1].name
+		ebitenutil.DrawRect(screen, float64(g.cursor.screenx)-2, float64(g.cursor.screeny)-2, 4, 4, clrCyan)
+
+		ebitenutil.DebugPrintAt(
+			screen,
+			fmt.Sprintf("(%d, %d)", int(g.cursor.screenx), int(g.cursor.screeny)),
+			int(g.cursor.screenx), int(g.cursor.screeny))
+		// scene info (to avoid crashing)
+		sceneName := "nil"
+		sceneIndex := len(g.scenes) - 1
+		sceneCount := len(g.scenes)
+		if !g.scenes.IsEmpty() {
+			sceneName = g.scenes[len(g.scenes)-1].name
+		}
+
+		ebitenutil.DrawRect(screen, 0, 0, 47, 15, color.Black)
+
+		debugString := fmt.Sprintf(
+			"FPS: %d\n"+
+				"\n"+
+				"Memory\n"+
+				"Sprite Count: %d\n"+
+				"\n"+
+				"Scene\n"+
+				"Index: %d (%d)\n"+
+				"Name: %s\n"+
+				"\n"+
+				"Camera\n"+
+				"Pos: (%d, %d)\n"+
+				"Zoom: %0.1f -> %0.1f\n"+
+				"\n"+
+				"Mouse\n"+
+				"ScreenPos: (%d, %d)\n"+
+				"WorldPos: (%d, %d)",
+			int(ebiten.ActualFPS()),
+			len(GameInstance.sprites),
+			sceneIndex, sceneCount,
+			sceneName,
+			int(g.cam.x), int(g.cam.y),
+			originalcamzoom, g.cam.zoom,
+			int(g.cursor.screenx), int(g.cursor.screeny),
+			int(g.cursor.worldx), int(g.cursor.worldy),
+		)
+		ebitenutil.DebugPrint(screen, debugString)
 	}
-
-	debugString := fmt.Sprintf(
-		"FPS: %d\n"+
-			"\n"+
-			"Memory\n"+
-			"Sprite Count: %d\n"+
-			"\n"+
-			"Scene\n"+
-			"Index: %d (%d)\n"+
-			"Name: %s\n"+
-			"\n"+
-			"Camera\n"+
-			"Pos: (%d, %d)\n"+
-			"Zoom: %0.1f -> %0.1f\n"+
-			"\n"+
-			"Mouse\n"+
-			"ScreenPos: (%d, %d)\n"+
-			"WorldPos: (%d, %d)",
-		int(ebiten.ActualFPS()),
-		len(GameInstance.sprites),
-		sceneIndex, sceneCount,
-		sceneName,
-		int(g.cam.x), int(g.cam.y),
-		originalcamzoom, g.cam.zoom,
-		int(g.cursor.screenx), int(g.cursor.screeny),
-		int(g.cursor.worldx), int(g.cursor.worldy),
-	)
-	ebitenutil.DebugPrint(screen, debugString)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
