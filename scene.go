@@ -11,7 +11,7 @@ type Scene struct {
 
 	Init   func()
 	Update func()
-	Draw   func(screen *ebiten.Image)
+	Draw   func() *ebiten.Image
 
 	initialized bool
 

@@ -1,8 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+// use integers for positions
+// due to errors in floating point numbers
+// this causes flickering
+// https://github.com/hajimehoshi/ebiten/discussions/2018
 
 type Sprite struct {
 	img     *ebiten.Image
@@ -20,4 +29,32 @@ type Sprite struct {
 	subh int // sub image height
 
 	op ebiten.DrawImageOptions
+}
+
+// draw the sprite to a screen
+func (s *Sprite) Draw(screen *ebiten.Image) {
+	op := s.op
+	op.GeoM.Scale(GameInstance.cam.zoom, GameInstance.cam.zoom)
+
+	scaledx, scaledy := s.x*GameInstance.cam.zoom, s.y*GameInstance.cam.zoom
+
+	// adjust draw positions based on camera positions
+	tx := -GameInstance.cam.x + windowcenterx + scaledx
+	ty := -GameInstance.cam.y + windowcentery + scaledy
+	op.GeoM.Translate(tx, ty)
+
+	// render image
+	img := (s.img).SubImage(image.Rect(s.subx, s.suby, s.subw, s.subh)).(*ebiten.Image)
+	//screen.DrawImage(img, &op)
+	screen.DrawImage(img, &op)
+
+	if showdebuginfo {
+		// debug lines
+		DrawOutlineRect(screen, tx, ty, s.w*GameInstance.cam.zoom, s.h*GameInstance.cam.zoom)
+		ebitenutil.DrawRect(screen, tx-3, ty-3, 6, 6, clrRed)
+		ebitenutil.DrawRect(screen, windowcenterx-3, windowcentery-3, 6, 6, clrYellow)
+
+		// debug position text
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("(%1.0f,%1.0f)", s.x, s.y), int(tx), int(ty))
+	}
 }

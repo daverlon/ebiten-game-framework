@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -35,11 +34,11 @@ func testScene2() *Scene {
 		}
 	}
 
-	s.Draw = func(screen *ebiten.Image) {
+	/*s.Draw = func(screen *ebiten.Image) {
 		ebitenutil.DebugPrintAt(screen, "Press Q to quit.", windowcenterx, windowcentery)
 		ebitenutil.DebugPrintAt(screen, "Press 1 to play flappy game", windowcenterx, windowcentery+20)
 		ebitenutil.DebugPrintAt(screen, "Press 2 to play run away game", windowcenterx, windowcentery+40)
-	}
+	}*/
 
 	return s
 }

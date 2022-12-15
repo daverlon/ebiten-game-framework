@@ -15,6 +15,8 @@ func flappyScene() *Scene {
 	s := &Scene{}
 	s.name = "Flappy bird clone scene"
 
+	var drawTarget *ebiten.Image
+
 	var paused = false
 
 	var playerRef *Sprite
@@ -108,6 +110,16 @@ func flappyScene() *Scene {
 
 		jumpTimer = jumpCooldown
 		pipeSpawnTimer = pipeSpawnCooldown
+		drawTarget = ebiten.NewImage(640, 480)
+	}
+
+	s.Draw = func() *ebiten.Image {
+		drawTarget.Clear()
+		for _, s := range GameInstance.sprites {
+			s.Draw(drawTarget)
+		}
+
+		return drawTarget
 	}
 
 	var PlayerJump func()

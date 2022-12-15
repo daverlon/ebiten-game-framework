@@ -95,9 +95,9 @@ func testScene() *Scene {
 
 	}
 
-	s.Draw = func(screen *ebiten.Image) {
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
-	}
+	//s.Draw = func() *ebiten.Image {
+	//ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
+	//}
 
 	return s
 }

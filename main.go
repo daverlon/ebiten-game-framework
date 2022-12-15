@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"image"
 	"image/color"
 	_ "image/png"
 	"log"
@@ -66,40 +65,11 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+
 	screen.Fill(color.RGBA{50, 50, 50, 255})
 
-	if !GameInstance.scenes.IsEmpty() && GameInstance.scenes.Active().Draw != nil {
-		GameInstance.scenes.Active().Draw(screen)
-	}
-
-	for _, spr := range g.sprites {
-
-		op := spr.op
-
-		// adjust draw scale based on camera zoom
-		op.GeoM.Scale(g.cam.zoom, g.cam.zoom)
-
-		// scaled var
-		scaledx, scaledy := spr.x*g.cam.zoom, spr.y*g.cam.zoom
-
-		// adjust draw positions based on camera positions
-		tx := -g.cam.x + windowcenterx + scaledx
-		ty := -g.cam.y + windowcentery + scaledy
-		op.GeoM.Translate(tx, ty)
-
-		// render image
-		img := (spr.img).SubImage(image.Rect(spr.subx, spr.suby, spr.subw, spr.subh)).(*ebiten.Image)
-		screen.DrawImage(img, &op)
-
-		if showdebuginfo {
-			// debug lines
-			DrawOutlineRect(screen, tx, ty, spr.w*g.cam.zoom, spr.h*g.cam.zoom)
-			ebitenutil.DrawRect(screen, tx-3, ty-3, 6, 6, clrRed)
-			ebitenutil.DrawRect(screen, windowcenterx-3, windowcentery-3, 6, 6, clrYellow)
-
-			// debug position text
-			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("(%1.0f,%1.0f)", spr.x, spr.y), int(tx), int(ty))
-		}
+	if !g.scenes.IsEmpty() && GameInstance.scenes.Active().Draw != nil {
+		screen.DrawImage(GameInstance.scenes.Active().Draw(), nil)
 	}
 
 	// debug info
@@ -173,6 +143,7 @@ func main() {
 	s := 1.5
 	w, h := int(640*s), int(480*s)
 
+	ebiten.SetVsyncEnabled(true)
 	ebiten.SetWindowSize(w, h)
 	ebiten.SetWindowTitle("Game Window")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
