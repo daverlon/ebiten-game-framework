@@ -117,7 +117,6 @@ func flappyScene() *Scene {
 
 		fmt.Println("Initialized " + s.name)
 	}
-	s.Init()
 
 	// (optional) draw function
 	s.Draw = func(screen *ebiten.Image) {
