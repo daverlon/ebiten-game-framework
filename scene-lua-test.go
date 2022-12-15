@@ -16,15 +16,11 @@ func luaTestScene() *Scene {
 	l := lua.NewState()
 	defer l.Close()
 
-	var l_update func()
-
 	s.Init = func() {
 
-		if err := l.DoFile("test.lua"); err != nil {
+		if err := l.DoFile("scenes/init.lua"); err != nil {
 			fmt.Println("Error reading lua file:")
 			fmt.Println(err)
-
-			l.SetGlobal("update", l_update)
 		}
 
 	}
@@ -38,9 +34,12 @@ func luaTestScene() *Scene {
 			GameInstance.scenes.Pop()
 		}
 
-		if l_update != nil {
-			l_update()
+		if err := l.DoFile("scenes/update.lua"); err != nil {
+			fmt.Println("Error reading lua file:")
+			fmt.Println(err)
+
 		}
+
 	}
 
 	return s
