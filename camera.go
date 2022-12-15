@@ -3,7 +3,7 @@ package main
 type Camera struct {
 	x    float64
 	y    float64
-	zoom float64
+	zoom float64 // for debugging purposes
 }
 
 func (cam *Camera) ScreenToWorld(x float64, y float64) (float64, float64) {

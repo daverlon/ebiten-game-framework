@@ -9,6 +9,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 var showdebuginfo = true
@@ -19,10 +20,14 @@ var (
 	clrYellow = color.RGBA{255, 255, 0, 255}
 )
 
+// 640 x 480
+
 const (
-	windowcenterx   = 320
-	windowcentery   = 240.0
-	originalcamzoom = 2.5
+	viewportw       = 320 // how much of the 'world' the camera can see
+	viewporth       = 240
+	windowcenterx   = viewportw / 2 // 'screen' position
+	windowcentery   = viewporth / 2
+	originalcamzoom = 1.0
 )
 
 func DrawOutlineRect(img *ebiten.Image, x float64, y float64, w float64, h float64) {
@@ -54,6 +59,17 @@ func (g *Game) Update() error {
 		return errors.New("Error: No scene available. Quitting")
 	}
 
+	if inpututil.IsKeyJustPressed(ebiten.KeyTab) {
+		showdebuginfo = !showdebuginfo
+	}
+
+	_, mY := ebiten.Wheel()
+	GameInstance.cam.zoom += mY
+	minzoom := 0.2
+	if GameInstance.cam.zoom < minzoom {
+		GameInstance.cam.zoom = minzoom
+	}
+
 	updateCursor(g)
 
 	// update current scene
@@ -69,8 +85,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{50, 50, 50, 255})
 
 	if !g.scenes.IsEmpty() && GameInstance.scenes.Active().Draw != nil {
-		screen.DrawImage(GameInstance.scenes.Active().Draw(), nil)
+		GameInstance.scenes.Active().Draw(screen)
 	}
+
+	ebitenutil.DrawRect(screen, 0, 0, 47, 15, color.Black)
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %1.0f", ebiten.ActualFPS()))
 
 	// debug info
 	if showdebuginfo {
@@ -89,26 +108,22 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			sceneName = g.scenes[len(g.scenes)-1].name
 		}
 
-		ebitenutil.DrawRect(screen, 0, 0, 47, 15, color.Black)
-
 		debugString := fmt.Sprintf(
-			"FPS: %d\n"+
-				"\n"+
+			"\n"+
 				"Memory\n"+
 				"Sprite Count: %d\n"+
-				"\n"+
+				//"\n"+
 				"Scene\n"+
 				"Index: %d (%d)\n"+
 				"Name: %s\n"+
-				"\n"+
+				//"\n"+
 				"Camera\n"+
 				"Pos: (%d, %d)\n"+
 				"Zoom: %0.1f -> %0.1f\n"+
-				"\n"+
+				//"\n"+
 				"Mouse\n"+
 				"ScreenPos: (%d, %d)\n"+
 				"WorldPos: (%d, %d)",
-			int(ebiten.ActualFPS()),
 			len(GameInstance.sprites),
 			sceneIndex, sceneCount,
 			sceneName,
@@ -122,7 +137,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 640, 480
+	return viewportw, viewporth
 }
 
 // instance of 'game' with global access

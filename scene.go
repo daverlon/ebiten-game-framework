@@ -11,12 +11,12 @@ type Scene struct {
 
 	Init   func()
 	Update func()
-	Draw   func() *ebiten.Image
-
-	initialized bool
+	Draw   func(screen *ebiten.Image)
 
 	//g      *Game
 }
+
+// ------- //
 
 type SceneStack []*Scene
 
@@ -26,6 +26,7 @@ func (s *SceneStack) IsEmpty() bool {
 
 func (s *SceneStack) Push(ss *Scene) {
 	GameInstance.sprites = nil
+	ss.Init()
 	*s = append(*s, ss)
 	fmt.Println("Pushed Scene to SceneStack. Scene count:", len(*s))
 }

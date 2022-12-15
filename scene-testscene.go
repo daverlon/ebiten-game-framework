@@ -9,8 +9,7 @@ import (
 )
 
 func testScene() *Scene {
-	s := &Scene{}
-	s.name = "Movement and camera test scene"
+	s := &Scene{name: "Movement and camera test"}
 
 	var playerRef *Sprite
 	var otherRef *Sprite
@@ -18,7 +17,6 @@ func testScene() *Scene {
 	var playerHealth int
 
 	s.Init = func() {
-		GameInstance.sprites = nil
 
 		playerHealth = 100
 
@@ -60,13 +58,12 @@ func testScene() *Scene {
 		GameInstance.sprites = append(GameInstance.sprites, &otherSprite)
 
 		fmt.Println("Initialized " + s.name)
-		s.initialized = true
 	}
 
 	s.Update = func() {
-		if !s.initialized {
-			s.Init()
-		}
+		//if !s.initialized {
+		//	s.Init()
+		//}
 
 		updateCamera(*playerRef)
 		movePlayer(playerRef)
@@ -95,10 +92,12 @@ func testScene() *Scene {
 
 	}
 
-	//s.Draw = func() *ebiten.Image {
-	//ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
-	//}
-
+	s.Draw = func(screen *ebiten.Image) {
+		for _, spr := range GameInstance.sprites {
+			spr.Draw(screen)
+		}
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
+	}
 	return s
 }
 
@@ -131,27 +130,18 @@ func movePlayer(player *Sprite) {
 }
 
 func updateEnemy(player Sprite, other *Sprite) {
-	ms := 0.2
-	if other.x > player.x {
-		other.x -= ms
-	}
-	if other.x <= player.x {
-		other.x += ms
-	}
-	if other.y > player.y {
-		other.y -= ms
-	}
-	if other.y <= player.y {
-		other.y += ms
-	}
+
+	ms := 0.02
+
+	deltax := player.x - other.x
+	deltay := player.y - other.y
+	//fmt.Println(deltax, deltay)
+
+	other.x += deltax * ms
+	other.y += deltay * ms
 }
 
 func updateCamera(p Sprite) {
-	_, mY := ebiten.Wheel()
-	GameInstance.cam.zoom += mY
-	minzoom := 0.5
-	if GameInstance.cam.zoom < minzoom {
-		GameInstance.cam.zoom = minzoom
-	}
+
 	GameInstance.cam.SlowlyMove(p.x+p.centerx, p.y+p.centery, 0.4)
 }
