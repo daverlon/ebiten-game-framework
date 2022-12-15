@@ -12,7 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var showdebuginfo = true
+var showdebuginfo = false
 
 var (
 	clrRed    = color.RGBA{255, 0, 0, 255}

@@ -49,6 +49,7 @@ func flappyScene() *Scene {
 	var pipeDeadZoneX float64 // defined later since it relies on defaultPipeSprite.w
 
 	// initialize the scene
+	//s.Init
 	s.Init = func() {
 
 		// background sprite
