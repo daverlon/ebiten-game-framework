@@ -8,11 +8,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-// use integers for positions
-// due to errors in floating point numbers
-// this causes flickering
-// https://github.com/hajimehoshi/ebiten/discussions/2018
-
 type Sprite struct {
 	img     *ebiten.Image
 	x       float64 // world pos x
@@ -29,6 +24,14 @@ type Sprite struct {
 	subh int // sub image height
 
 	op ebiten.DrawImageOptions
+}
+
+func (g *Game) AddSprite(s *Sprite) {
+	g.sprites = append(g.sprites, s)
+}
+
+func (g *Game) RemoveSprite(index int) {
+	g.sprites = append(g.sprites[:index], g.sprites[index+1:]...)
 }
 
 // draw the sprite to a screen

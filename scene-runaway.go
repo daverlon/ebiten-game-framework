@@ -29,6 +29,9 @@ func testScene() *Scene {
 		}
 
 		redDino, _, err := ebitenutil.NewImageFromFile("sprites/dino-red.png")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		playerSprite := Sprite{
 			img:     blueDino,

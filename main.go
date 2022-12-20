@@ -20,9 +20,8 @@ var (
 	clrYellow = color.RGBA{255, 255, 0, 255}
 )
 
-// 640 x 480
-
 const (
+	// 640 x 480
 	viewportw       = 320 // how much of the 'world' the camera can see
 	viewporth       = 240
 	windowcenterx   = viewportw / 2 // 'screen' position
@@ -56,7 +55,7 @@ func (g *Game) Update() error {
 
 	if GameInstance.scenes.IsEmpty() {
 		fmt.Println("Warning: SceneStack is empty.")
-		return errors.New("Error: No scene available. Quitting")
+		return errors.New("error: no scene available. quitting")
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyTab) {
@@ -83,6 +82,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	screen.Fill(color.RGBA{50, 50, 50, 255})
+	screen.Clear()
 
 	if !g.scenes.IsEmpty() && GameInstance.scenes.Active().Draw != nil {
 		GameInstance.scenes.Active().Draw(screen)
@@ -145,26 +145,18 @@ var GameInstance = &Game{
 	cam: Camera{zoom: originalcamzoom},
 }
 
-func (g *Game) AddSprite(s *Sprite) {
-	g.sprites = append(g.sprites, s)
-}
-
-func (g *Game) RemoveSprite(index int) {
-	g.sprites = append(g.sprites[:index], g.sprites[index+1:]...)
-}
-
 func main() {
 
 	s := 1.5
 	w, h := int(640*s), int(480*s)
 
-	ebiten.SetVsyncEnabled(true)
+	// ebiten.SetVsyncEnabled(true)
+	ebiten.SetFPSMode(ebiten.FPSModeVsyncOn)
 	ebiten.SetWindowSize(w, h)
 	ebiten.SetWindowTitle("Game Window")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	defaultScene := *testScene2()
-	GameInstance.scenes.Push(&defaultScene)
+	GameInstance.scenes.Push(testScene2())
 
 	if err := ebiten.RunGame(GameInstance); err != nil {
 		log.Fatal(err)

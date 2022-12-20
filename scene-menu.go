@@ -23,21 +23,17 @@ func testScene2() *Scene {
 			GameInstance.scenes.Push(testScene())
 		}
 
-		if inpututil.IsKeyJustPressed(ebiten.Key3) {
-			GameInstance.scenes.Push(luaTestScene())
-		}
-
 		if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
 			GameInstance.scenes.Pop()
 		}
 	}
 
 	s.Draw = func(screen *ebiten.Image) {
-		posx := windowcenterx - 70
-		ebitenutil.DebugPrintAt(screen, "Press Q to quit.", posx, windowcentery)
-		ebitenutil.DebugPrintAt(screen, "Press 1 to play flappy game", posx, windowcentery+20)
-		ebitenutil.DebugPrintAt(screen, "Press 2 to play run away game", posx, windowcentery+40)
-		ebitenutil.DebugPrintAt(screen, "Press 3 to test lua scene", posx, windowcentery+60)
+		posx := windowcenterx - 80
+		posy := windowcentery - 25
+		ebitenutil.DebugPrintAt(screen, "Press Q to quit.", posx, posy)
+		ebitenutil.DebugPrintAt(screen, "Press 1 to play flappy game", posx, posy+20)
+		ebitenutil.DebugPrintAt(screen, "Press 2 to play run away game", posx, posy+40)
 	}
 
 	return s
