@@ -70,7 +70,7 @@ func testScene() *Scene {
 
 		updateCamera(*playerRef)
 		movePlayer(playerRef)
-		updateEnemy(*playerRef, *&otherRef)
+		updateEnemy(*playerRef, otherRef)
 
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			otherRef.x, otherRef.y = GameInstance.cursor.worldx, GameInstance.cursor.worldy

@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.4.14
-	github.com/yuin/gopher-lua v0.0.0-20221210110428-332342483e3f
 )
 
 require (
