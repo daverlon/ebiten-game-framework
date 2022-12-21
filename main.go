@@ -89,7 +89,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	ebitenutil.DrawRect(screen, 0, 0, 47, 15, color.Black)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %1.0f", ebiten.ActualFPS()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %1.2f", ebiten.ActualTPS()))
 
 	// debug info
 	if showdebuginfo {
