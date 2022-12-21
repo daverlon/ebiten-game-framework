@@ -44,7 +44,7 @@ func flappyScene() *Scene {
 	var defaultPipeSprite Sprite // default pipe to have its' value copied into new pipes
 	const pipeSpawnCooldown = 130
 	var pipeSpawnTimer = pipeSpawnCooldown // make this the cooldown so pipe spawns instantly
-	const pipeMoveSpeed = 0.8
+	const pipeMoveSpeed = 1.0
 	const pipeGap = 130
 	var pipeDeadZoneX float64 // defined later since it relies on defaultPipeSprite.w
 
