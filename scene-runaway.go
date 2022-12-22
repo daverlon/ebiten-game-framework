@@ -66,11 +66,22 @@ func testScene() *Scene {
 		fmt.Println("Initialized " + s.name)
 	}
 
+	s.Draw = func(screen *ebiten.Image) {
+		for _, spr := range GameInstance.sprites {
+			spr.Draw(screen)
+		}
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
+	}
+
+	var movePlayer func()
+	var updateEnemy func()
+	var updateCamera func()
+
 	s.Update = func() {
 
-		updateCamera(*playerRef)
-		movePlayer(playerRef)
-		updateEnemy(*playerRef, otherRef)
+		updateCamera()
+		movePlayer()
+		updateEnemy()
 
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			otherRef.x, otherRef.y = GameInstance.cursor.worldx, GameInstance.cursor.worldy
@@ -92,59 +103,51 @@ func testScene() *Scene {
 			otherRef.h) {
 			playerHealth -= 1
 		}
-
 	}
 
-	s.Draw = func(screen *ebiten.Image) {
-		for _, spr := range GameInstance.sprites {
-			spr.Draw(screen)
+	movePlayer = func() {
+
+		moveSpeed := float64(2)
+
+		var inputX float64
+		var inputY float64
+
+		if ebiten.IsKeyPressed(ebiten.KeyD) {
+			inputX = -1
+		} else if ebiten.IsKeyPressed(ebiten.KeyA) {
+			inputX = 1
+		} else {
+			inputX = 0
 		}
-		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Health: %d", playerHealth), windowcenterx-33, 5)
+
+		if ebiten.IsKeyPressed(ebiten.KeyW) {
+			inputY = -1
+		} else if ebiten.IsKeyPressed(ebiten.KeyS) {
+			inputY = 1
+		} else {
+			inputY = 0
+		}
+
+		playerRef.x -= inputX * moveSpeed
+		playerRef.y += inputY * moveSpeed
+
 	}
+
+	updateEnemy = func() {
+
+		ms := 0.02
+
+		deltax := playerRef.x - otherRef.x
+		deltay := playerRef.y - otherRef.y
+		//fmt.Println(deltax, deltay)
+
+		otherRef.x += deltax * ms
+		otherRef.y += deltay * ms
+	}
+
+	updateCamera = func() {
+		GameInstance.cam.SlowlyMove(playerRef.x+playerRef.centerx, playerRef.y+playerRef.centery, 0.4)
+	}
+
 	return s
-}
-
-func movePlayer(player *Sprite) {
-
-	moveSpeed := float64(2)
-
-	var inputX float64
-	var inputY float64
-
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		inputX = -1
-	} else if ebiten.IsKeyPressed(ebiten.KeyA) {
-		inputX = 1
-	} else {
-		inputX = 0
-	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		inputY = -1
-	} else if ebiten.IsKeyPressed(ebiten.KeyS) {
-		inputY = 1
-	} else {
-		inputY = 0
-	}
-
-	player.x -= inputX * moveSpeed
-	player.y += inputY * moveSpeed
-
-}
-
-func updateEnemy(player Sprite, other *Sprite) {
-
-	ms := 0.02
-
-	deltax := player.x - other.x
-	deltay := player.y - other.y
-	//fmt.Println(deltax, deltay)
-
-	other.x += deltax * ms
-	other.y += deltay * ms
-}
-
-func updateCamera(p Sprite) {
-
-	GameInstance.cam.SlowlyMove(p.x+p.centerx, p.y+p.centery, 0.4)
 }
